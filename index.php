@@ -11,6 +11,7 @@ spl_autoload_register(function (string $class_name) {
 // load class Route
 $router = new Core\Http\Route();
 
+
 include_once PATH_ROOT . '/routers/admin.php';
 include_once PATH_ROOT . '/routers/user.php';
 include_once PATH_ROOT . '/routers/authentication.php';
@@ -18,6 +19,10 @@ include_once PATH_ROOT . '/routers/authentication.php';
 include_once PATH_ROOT . '/models/dish_model.php';
 include_once PATH_ROOT . '/models/blog_model.php';
 include_once PATH_ROOT . '/models/reservation_model.php';
+include_once PATH_ROOT . '/models/user_model.php';
+include_once PATH_ROOT . '/models/comment_model.php';
+
+include_once PATH_ROOT . '/middlewares/AuthMiddleware.php';
 
 // Lấy url hiện tại của trang web. Mặc định la /
 $request_url = !empty($_GET['url']) ? '/' . $_GET['url'] : '/';

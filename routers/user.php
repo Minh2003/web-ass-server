@@ -4,4 +4,5 @@
    $router->get('/menu', 'UserController@getMenu');
 
    $router->post('/reservation', 'UserController@reservation');
+   $router->post('/comment/create', 'UserController@createComment');
 ?>

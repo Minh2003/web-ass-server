@@ -5,11 +5,28 @@ namespace Controllers;
 use blog_model;
 use dish_model;
 use Db;
+use Middleware\AuthMiddleware as AuthMiddleware;
 
-class AdminController
+class AdminController extends AuthMiddleware
 {
+
+  public function checkAdminRole()
+  {
+    $user_valid = $this->isJWTValid();
+
+    if ($user_valid === FALSE || json_decode($user_valid)->manager === '0') {
+      return FALSE;
+    } else {
+      return TRUE;
+    }
+  }
+
   public function createDish()
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
     $db = Db::getInstance();
 
     $name = $_POST['name'];
@@ -26,6 +43,10 @@ class AdminController
 
   public function deleteDish($param)
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
     $db = Db::getInstance();
 
     $id = substr($param, 1, -1);
@@ -38,6 +59,10 @@ class AdminController
 
   public function createBlog()
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
     $db = Db::getInstance();
 
     $title = $_POST['title'];
@@ -55,6 +80,10 @@ class AdminController
 
   public function deleteBlog($param)
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
     $db = Db::getInstance();
 
     $id = substr($param, 1, -1);
@@ -67,6 +96,10 @@ class AdminController
 
   public function updateBlog($param)
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
     $db = Db::getInstance();
 
     $id = substr($param, 1, -1);
@@ -82,11 +115,28 @@ class AdminController
     echo json_encode($blog);
   }
 
-  public function deleteUser($user_id)
+  public function deleteUser($param)
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
+    $db = Db::getInstance();
+
+    $id = substr($param, 1, -1);
+
+    $sql = "delete from user where id = $id";
+    mysqli_query($db, $sql);
+
+    echo json_encode("Successfully!");
+
   }
 
   public function deleteComment()
   {
+    if (!$this->checkAdminRole()) {
+      echo "Invalid action";
+      return;
+    }
   }
 }
