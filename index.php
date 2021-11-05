@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once("db.php");
 // Định nghĩa hằng Path của file index.php
 define('PATH_ROOT', __DIR__);

@@ -8,16 +8,6 @@ use Middleware\AuthMiddleware as AuthMiddleware;
 
 class AuthenticationController extends AuthMiddleware
 {
-  public function checkUserExists($username)
-  {
-    $db = Db::getInstance();
-    $sql = "SELECT * FROM user where username = '$username'";
-
-    $result = $db->query($sql);
-
-    return $result;
-  }
-
   public function register()
   {
     $db = Db::getInstance();
@@ -31,7 +21,9 @@ class AuthenticationController extends AuthMiddleware
 
     $user = $this->checkUserExists($username);
     if ($user->num_rows > 0) {
-      echo "User already exists";
+      echo json_encode(["message" => "User already exists", 'status' => 401]);
+    } else if ((strlen($username) > 50 || strlen($phoneNumber) > 10 || strlen($email) > 50)) {
+      echo json_encode(["message" => "Text for username or phone number or email is too long", 'status' => 409]);
     } else {
       $sql = "insert into user(email, password, username, phoneNumber, manager, avatar) 
             values ('$email', '$hashed_password', '$username', '$phoneNumber', $manager, '$avatar')";
@@ -47,12 +39,14 @@ class AuthenticationController extends AuthMiddleware
       ];
       $token = $this->generateJWT($payload);
 
+      $user->password = '';
+
       $response = [
         'user' => $new_user,
         'token' => $token
       ];
 
-      echo json_encode($response);
+      echo json_encode(["response" => $response, 'status' => 200]);
     }
   }
 
@@ -64,10 +58,10 @@ class AuthenticationController extends AuthMiddleware
     $result = $this->checkUserExists($username);
 
     if ($result->num_rows > 0) {
-      $row = $result->fetch_assoc();
+      $row = mysqli_fetch_assoc($result);
       $user = new user_model($row['id'], $row['email'], $row['password'], $row['username'], $row['phoneNumber'], $row['avatar'], $row['manager']);
 
-      if(password_verify($password, $user->password)) {
+      if (password_verify($password, $user->password)) {
         $payload = [
           'username' => $username,
           'id' => $row['id'],
@@ -75,19 +69,20 @@ class AuthenticationController extends AuthMiddleware
           'exp' => time() + 60 * 60 * 24 * 30,
         ];
         $token = $this->generateJWT($payload);
-  
+
+        $user->password = '';
+
         $response = [
           'user' => $user,
           'token' => $token
         ];
 
-        echo json_encode($response);
-      }
-      else {
-        echo "Wrong password";
+        echo json_encode(['response' => $response, 'status' => 200]);
+      } else {
+        echo json_encode(["message" => "Wrong password", 'status' => 401]);
       }
     } else {
-      echo "User does not exist";
+      echo json_encode(["message" => "User does not exist", 'status' => 401]);
     }
   }
 }

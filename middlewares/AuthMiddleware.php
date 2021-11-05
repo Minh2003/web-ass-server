@@ -2,6 +2,8 @@
 
 namespace Middleware;
 
+use Db;
+
 class AuthMiddleware
 {
   public function base64url_encode($str)
@@ -57,5 +59,15 @@ class AuthMiddleware
     } else {
       return $payload_decode;
     }
+  }
+
+  public function checkUserExists($username)
+  {
+    $db = Db::getInstance();
+    $sql = "SELECT * FROM user where username = '$username'";
+
+    $result = mysqli_query($db, $sql);
+
+    return $result;
   }
 }
