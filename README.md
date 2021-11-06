@@ -30,7 +30,7 @@
     + header: {}.
   + Lấy thông tin chi tiết của blog:
     + method: GET.
-    + url: `/blogs/{id}`.
+    + url: `/blog/{id}`.
     + body: {}.
     + header: {}.
   + Lấy danh sách các món ăn:
