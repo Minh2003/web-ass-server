@@ -4,10 +4,11 @@ namespace Controllers;
 
 use blog_model;
 use dish_model;
+use comment_model;
+use user_model;
 use Db;
 use Middleware\AuthMiddleware as AuthMiddleware;
 use Middleware\FormMiddleware as FormMiddleware;
-use user_model;
 
 class AdminController
 {
@@ -55,6 +56,46 @@ class AdminController
     }
   }
 
+  public function updateDish($param)
+  {
+    if (!$this->checkAdminRole()) {
+      echo json_encode(["message" => "Invalid action. You are not admin", 'status' => 403]);
+      return;
+    }
+    $db = Db::getInstance();
+
+    $formValid = new FormMiddleware();
+    $payload = ['name', 'description', 'image'];
+    $check = $formValid->checkFullFields($payload);
+
+    if ($check) {
+      $id = substr($param, 1, -1);
+
+      $sql = "select * from dish where id = $id";
+      $row = mysqli_query($db, $sql);
+
+      if ($row->num_rows > 0) {
+        $name = $_POST['name'];
+        $description = $_POST['description'];
+        $image = $_POST['image'];
+
+        $sql = "Update dish set name = '$name', description = '$description', image = '$image' where id = $id";
+        $row = mysqli_query($db, $sql);
+
+        if ($row) {
+          $dish = new dish_model($id, $name, $description, $image);
+          echo json_encode(["response" => $dish, 'status' => 200]);
+        } else {
+          echo json_encode(["message" => "Server of database is error", 'status' => 500]);
+        }
+      } else {
+        echo json_encode(["message" => "Dish $id not found", 'status' => 404]);
+      }
+    } else {
+      echo json_encode(['message' => "Missing some fields", 'status' => 400]);
+    }
+  }
+
   public function deleteDish($param)
   {
     if (!$this->checkAdminRole()) {
@@ -64,6 +105,13 @@ class AdminController
     $db = Db::getInstance();
 
     $id = substr($param, 1, -1);
+
+    $sql = "SELECT * FROM dish WHERE id =$id";
+    $row = mysqli_query($db, $sql);
+    if ($row->num_rows == 0) {
+      echo json_encode(["message" => "Dish not found", 'status' => 404]);
+      return;
+    }
 
     $sql = "delete from dish where id = $id";
     $row = mysqli_query($db, $sql);
@@ -116,11 +164,25 @@ class AdminController
 
     $db = Db::getInstance();
     $id = substr($param, 1, -1);
-    $sql = "delete from blog where id = $id";
+
+    $sql = "SELECT * FROM blog WHERE id =$id";
+    $row = mysqli_query($db, $sql);
+    if ($row->num_rows == 0) {
+      echo json_encode(["message" => "Blog $id not found", 'status' => 404]);
+      return;
+    }
+
+    $sql = "delete from comment where blogId = $id";
     $row = mysqli_query($db, $sql);
 
     if ($row) {
-      echo json_encode(["response" => "Successfully!", 'status' => 200]);
+      $sql = "delete from blog where id = $id";
+      $row = mysqli_query($db, $sql);
+      if ($row) {
+        echo json_encode(["response" => "Successfully!", 'status' => 200]);
+      } else {
+        echo json_encode(["message" => "Server of database is error", 'status' => 500]);
+      }
     } else {
       echo json_encode(["message" => "Server of database is error", 'status' => 500]);
     }
@@ -151,13 +213,24 @@ class AdminController
         $sql = "update blog set title = '$title', content = '$content', image = '$image' where id = $id";
         $row = mysqli_query($db, $sql);
         if ($row) {
-          $blog = new blog_model($id, $title, $content, $image, $date);
-          echo json_encode(['response' => $blog, 'status' => 200]);
+          $sql = "SELECT * from comment where blogId = $id";
+          $result = mysqli_query($db, $sql);
+          if ($result->num_rows > 0) {
+            $list = [];
+            while ($row = mysqli_fetch_assoc($result)) {
+              $list[] = new comment_model($row['id'], $row['userId'], $row['blogId'], $row['description']);
+            }
+
+            $blog = new blog_model($id, $title, $content, $image, $date);
+            echo json_encode(['response' => ["blog" => $blog, "comments" => $list], 'status' => 200]);
+          } else {
+            echo json_encode(['message' => 'Server of database is error', 'status' => 500]);
+          }
         } else {
           echo json_encode(['message' => 'Server of database is error', 'status' => 500]);
         }
       } else {
-        echo json_encode(['message' => 'Blog not found', 'status' => 404]);
+        echo json_encode(['message' => "Blog $id not found", 'status' => 404]);
       }
     } else {
       echo json_encode(['message' => "Missing some fields", 'status' => 400]);
@@ -217,13 +290,13 @@ class AdminController
         if ($row == TRUE) {
           echo json_encode(["response" => "Successfully!", "status" => 200]);
         } else {
-          echo json_encode(["message" => "Server Error", 'status' => 500]);
+          echo json_encode(['message' => 'Server of database is error', 'status' => 500]);
         }
       } else {
-        echo json_encode(["message" => "Server Error", 'status' => 500]);
+        echo json_encode(['message' => 'Server of database is error', 'status' => 500]);
       }
     } else {
-      echo json_encode(["message" => "User not found", 'status' => 404]);
+      echo json_encode(["message" => "User $id not found", 'status' => 404]);
     }
   }
 
@@ -236,7 +309,7 @@ class AdminController
 
     $db = Db::getInstance();
     $comment_id = substr($param, 1, -1);
-    
+
     $sql = "select * from comment where id = $comment_id";
     $row = mysqli_query($db, $sql);
     if ($row->num_rows > 0) {
@@ -245,10 +318,10 @@ class AdminController
       if ($row == TRUE) {
         echo json_encode(["response" => "Successfully!", "status" => 200]);
       } else {
-        echo json_encode(["message" => "Server Error", 'status' => 500]);
+        echo json_encode(['message' => 'Server of database is error', 'status' => 500]);
       }
     } else {
-      echo json_encode(["message" => "Comment not found", 'status' => 404]);
+      echo json_encode(["message" => "Comment $comment_id not found", 'status' => 404]);
     }
   }
 }

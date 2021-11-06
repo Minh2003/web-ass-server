@@ -52,9 +52,9 @@ class AuthMiddleware
     $base64_url_payload = $this->base64url_encode($payload_decode);
     $signature_encoded = hash_hmac('SHA256', $base64_url_header . '.' . $base64_url_payload, $key, true);
     $base64_url_signature = $this->base64url_encode($signature_encoded);
-    $is_signature_valid = ($base64_url_signature === $signature_provided_decode);
+    $is_signature_valid = ($base64_url_signature == $signature_provided_decode);
 
-    if ($is_token_expired === TRUE || $is_signature_valid === FALSE) {
+    if ($is_token_expired == TRUE || $is_signature_valid == FALSE) {
       return FALSE;
     } else {
       return $payload_decode;
