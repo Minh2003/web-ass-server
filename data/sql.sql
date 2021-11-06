@@ -1,3 +1,7 @@
+create schema restaurant;
+
+use restaurant;
+
 create table dish (
 	id int auto_increment primary key,
     name varchar(50) not null,
@@ -7,7 +11,7 @@ create table dish (
 
 create table blog(
 	id int auto_increment primary key,
-    title varchar(50) not null,
+    title varchar(200) not null,
     content varchar(2000) not null,
     image varchar(200) not null,
     date timestamp default now()

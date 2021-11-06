@@ -9,6 +9,4 @@ $router->post('/admin/update_blog/{id}', 'AdminController@updateBlog');
 $router->get('/admin/users', 'AdminController@getAllUsers');
 $router->post('/admin/delete_user/{id}', 'AdminController@deleteUser');
 $router->post('/admin/delete_comment/{id}', 'AdminController@deleteComment');
-
-// $router->post('/admin/test', 'AdminController@isJWTValid')
 ?>
