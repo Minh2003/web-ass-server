@@ -134,25 +134,32 @@ class UserController
       $blogId = $_POST['blogId'];
       $description = $_POST['description'];
 
+      
       $sql = "select * from blog where id = $blogId";
       $row = mysqli_query($db, $sql);
-
+      
       if ($row->num_rows > 0) {
-        $userId = json_decode($user_valid)->id;
+        $check = $formValid->lengthValidator(0, 1000, $description);
 
-        $sql = "insert into comment (blogId, userId, description) values('$blogId', '$userId', '$description')";
-        mysqli_query($db, $sql);
-        $id = mysqli_insert_id($db);
-
-        if($id) {
-          $comment = new comment_model($id, $userId, $blogId, $description);
+        if($check) {
+          $userId = json_decode($user_valid)->id;
   
-          echo json_encode(['response' => $comment, 'status' => 200]);
+          $sql = "insert into comment (blogId, userId, description) values('$blogId', '$userId', '$description')";
+          mysqli_query($db, $sql);
+          $id = mysqli_insert_id($db);
+  
+          if($id) {
+            $comment = new comment_model($id, $userId, $blogId, $description);
+    
+            echo json_encode(['response' => $comment, 'status' => 200]);
+          }
+          else {
+            echo json_encode(['message' => "Server or database is error", 'status' => 500]);
+          }
         }
         else {
-          echo json_encode(['message' => "Server or database is error", 'status' => 500]);
+          echo json_encode(['message' => "Comment is too long", 'status' => 400]);
         }
-
       } else {
         echo json_encode(["message" => "Blog $blogId is not exist.", 'status' => 409]);
       }
