@@ -58,8 +58,8 @@
             { 
                 description, 
                 NoP: [1, 30],  
-                date: định dạng yyyy/mm/dd.
-                time: định dạng hh/mm/ss.
+                date: định dạng yyyy-mm-dd.
+                time: định dạng hh:mm:ss.
                 name
                 email
                 phoneNumber: length = 10
@@ -81,7 +81,7 @@
     + request:
         + method: POST.
         + url: `/auth/register`.
-        + body: { username, password, password, phoneNumber, email, avatar }.
+        + body: { username, password, password, phoneNumber : length = 10, email, avatar }.
         + header: {}.
     + response:
         + user: object chứa thông tin user đã đăng ký.
