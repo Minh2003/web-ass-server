@@ -19,10 +19,13 @@ create table blog(
 
 create table reservation (
 	id int auto_increment primary key,
-    date timestamp default now(),
-    description varchar(300),
+    name varchar(50),
+    email varchar(50),
+    phoneNumber char(10),
     NoP int,
-    check (NoP <= 30 and NoP >= 0)
+    date date,
+    time time,
+    description varchar(2000)
 );
 
 create table user (

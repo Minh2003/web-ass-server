@@ -215,7 +215,7 @@ class AdminController
         if ($row) {
           $sql = "SELECT * from comment where blogId = $id";
           $result = mysqli_query($db, $sql);
-          if ($result->num_rows > 0) {
+          if ($result) {
             $list = [];
             while ($row = mysqli_fetch_assoc($result)) {
               $list[] = new comment_model($row['id'], $row['userId'], $row['blogId'], $row['description']);
