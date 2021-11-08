@@ -30,7 +30,7 @@ class AuthenticationController extends AuthMiddleware
       mysqli_query($db, $sql);
       $id = mysqli_insert_id($db);
 
-      $new_user = new user_model($id, $email, $hashed_password, $username, $phoneNumber, $avatar, $manager);
+      $new_user = new user_model($id, $email, '', $username, $phoneNumber, $avatar, $manager);
       $payload = [
         'username' => $username,
         'id' => $id,
