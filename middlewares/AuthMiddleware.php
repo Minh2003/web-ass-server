@@ -6,21 +6,20 @@ use Db;
 
 class AuthMiddleware
 {
-  public function base64url_encode($str)
+  private $key = 'restaurant';
+  private $headersAlg = ['alg' => 'HS256', 'typ' => 'JWT'];
+
+  private function base64url_encode($str)
   {
     return rtrim(strtr(base64_encode($str), '+/', '-_'), '=');
   }
 
   public function generateJWT($payload)
   {
-    $key = 'restaurant';
-    $headers = [
-      'alg' => 'HS256',
-      'typ' => 'JWT'
-    ];
+    $headers = $this->headersAlg;
     $header_encoded = $this->base64url_encode(json_encode($headers));
     $payload_encoded = $this->base64url_encode(json_encode($payload));
-    $signature = hash_hmac('SHA256', $header_encoded . '.' . $payload_encoded, $key, true);
+    $signature = hash_hmac('SHA256', $header_encoded . '.' . $payload_encoded, $this->key, true);
     $signature_encoded = $this->base64url_encode($signature);
 
     $jwt_token = "$header_encoded.$payload_encoded.$signature_encoded";
@@ -30,7 +29,6 @@ class AuthMiddleware
 
   public function isJWTValid()
   {
-    $key = 'restaurant';
     $all_headers = getallheaders();
 
     if(empty($all_headers) || !array_key_exists('Bear-Token', $all_headers)) {
@@ -50,7 +48,7 @@ class AuthMiddleware
     // Check signature
     $base64_url_header = $this->base64url_encode($header_decode);
     $base64_url_payload = $this->base64url_encode($payload_decode);
-    $signature_encoded = hash_hmac('SHA256', $base64_url_header . '.' . $base64_url_payload, $key, true);
+    $signature_encoded = hash_hmac('SHA256', $base64_url_header . '.' . $base64_url_payload, $this->key, true);
     $base64_url_signature = $this->base64url_encode($signature_encoded);
     $is_signature_valid = ($base64_url_signature == $signature_provided_decode);
 

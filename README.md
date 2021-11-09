@@ -81,7 +81,7 @@
     + request:
         + method: POST.
         + url: `/auth/register`.
-        + body: { username, password, password, phoneNumber : length = 10, email, avatar }.
+        + body: { username, password, verify_password, phoneNumber : length = 10, email, avatar }.
         + header: {}.
     + response:
         + user: object chứa thông tin user đã đăng ký.

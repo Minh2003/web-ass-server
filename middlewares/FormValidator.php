@@ -4,7 +4,7 @@ namespace Middleware;
 
 class FormMiddleware
 {
-  public function checkFullFields($payload)
+  public static function checkFullFields($payload)
   {
     for ($i = 0; $i < count($payload); $i++) {
       if (!isset($_POST[$payload[$i]])) {
@@ -14,7 +14,7 @@ class FormMiddleware
     return TRUE;
   }
 
-  public function emailValidator($email)
+  public static function emailValidator($email)
   {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
       return TRUE;
@@ -23,11 +23,11 @@ class FormMiddleware
     }
   }
 
-  public function lengthValidator($minLength, $maxLength, $name) {
+  public static function lengthValidator($minLength, $maxLength, $name) {
     return strlen($name) <= $maxLength && strlen($name) >= $minLength;
   }
 
-  public function dateValidator($date) {
+  public static function dateValidator($date) {
     $date = explode('-', $date);
     if (count($date) == 3) {
       if (checkdate($date[1], $date[2], $date[0])) {
@@ -40,7 +40,7 @@ class FormMiddleware
     }
   }
 
-  public function timeValidator($time) {
+  public static function timeValidator($time) {
     $time = explode(':', $time);
     if (count($time) == 3) {
       if ($time[0] >= 0 && $time[0] <= 23) {
