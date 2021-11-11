@@ -5,7 +5,7 @@
 
     public static function getInstance() {
       if (!isset(self::$instance)) {
-        self::$instance = mysqli_connect("localhost", "root", "password", "restaurant");
+        self::$instance = mysqli_connect("localhost", "root", "LamHoangmysql560Dtvvn", "restaurant");
       }
       return self::$instance;
     }
