@@ -141,6 +141,13 @@ class UserController
         if ($check) {
           $userId = json_decode($user_valid)->id;
 
+          $sql = "select * from user where id = $userId";
+          $row = mysqli_query($db, $sql);
+          if($row->num_rows == 0) {
+            echo json_encode(['message' => "You are not allowed to comment on this blog", 'status' => 405]);
+            return ;
+          }
+
           $sql = "insert into comment (blogId, userId, description) values('$blogId', '$userId', '$description')";
           mysqli_query($db, $sql);
           $id = mysqli_insert_id($db);
@@ -178,6 +185,14 @@ class UserController
     $check = FormMiddleware::checkFullFields($payload);
     
     if ($check) {
+
+      $sql = "select * from user where id = $user_id";
+      $row = mysqli_query($db, $sql);
+      if($row->num_rows == 0) {
+        echo json_encode(['message' => "You are not allowed to comment on this blog", 'status' => 405]);
+        return ;
+      }
+
       $blog_id = $_POST['blogId'];
       $comment_id = substr($param, 1, -1);
       
