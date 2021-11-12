@@ -10,11 +10,11 @@ use Middleware\FormMiddleware as FormMiddleware;
 class AuthenticationController
 {
   public function register()
-  { 
+  {
     $payload = ['email', 'password', 'username', 'phoneNumber', 'avatar', 'verify_password'];
     $check = FormMiddleware::checkFullFields($payload);
-    
-    if ($check) {   
+
+    if ($check) {
       $email = $_POST['email'];
       $password = $_POST['password'];
       $verify_password = $_POST['verify_password'];
@@ -23,19 +23,18 @@ class AuthenticationController
       $avatar = $_POST['avatar'];
       $manager = 0;
       $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-      
-      if($password != $verify_password) {
+
+      if ($password != $verify_password) {
         echo json_encode(['message' => 'Passwords do not match', 'status' => 400]);
         return;
       }
 
-      $check = FormMiddleware::lengthValidator(10, 10, $phoneNumber) 
-            && FormMiddleware::emailValidator($email)
-            && FormMiddleware::lengthValidator(0, 51, $username);
+      $check = FormMiddleware::lengthValidator(10, 10, $phoneNumber)
+        && FormMiddleware::emailValidator($email)
+        && FormMiddleware::lengthValidator(0, 51, $username);
       if ($check) {
         echo json_encode(['message' => "Invalid data", 'status' => 409]);
-      }
-      else {
+      } else {
         $db = Db::getInstance();
 
         $auth = new AuthMiddleware();
@@ -47,9 +46,9 @@ class AuthenticationController
                 values ('$email', '$hashed_password', '$username', '$phoneNumber', $manager, '$avatar')";
           mysqli_query($db, $sql);
           $id = mysqli_insert_id($db);
-  
+
           $new_user = new user_model($id, $email, '', $username, $phoneNumber, $avatar, $manager);
-          if($id) {
+          if ($id) {
             $payload = [
               'username' => $username,
               'id' => $id,
@@ -57,17 +56,16 @@ class AuthenticationController
               'exp' => time() + 60 * 60 * 24 * 30,
             ];
             $token = $auth->generateJWT($payload);
-    
+
             $user->password = '';
-    
+
             $response = [
               'user' => $new_user,
               'token' => $token
             ];
-    
+
             echo json_encode(["response" => $response, 'status' => 200]);
-          }
-          else {
+          } else {
             echo json_encode(['message' => "Server or database is error", 'status' => 500]);
           }
         }
@@ -81,16 +79,16 @@ class AuthenticationController
   {
     $payload = ['username', 'password'];
     $check = FormMiddleware::checkFullFields($payload);
-    if($check) {
+    if ($check) {
       $username = $_POST['username'];
       $password = $_POST['password'];
-  
+
       $auth = new AuthMiddleware();
       $result = $auth->checkUserExists($username);
-  
+
       if ($result->num_rows > 0) {
         $row = mysqli_fetch_assoc($result);
-        
+
         if (password_verify($password, $row['password'])) {
           $user = new user_model($row['id'], $row['email'], $row['password'], $row['username'], $row['phoneNumber'], $row['avatar'], $row['manager']);
           $payload = [
@@ -100,14 +98,14 @@ class AuthenticationController
             'exp' => time() + 60 * 60 * 24 * 30,
           ];
           $token = $auth->generateJWT($payload);
-  
+
           $user->password = '';
-  
+
           $response = [
             'user' => $user,
             'token' => $token
           ];
-  
+
           echo json_encode(['response' => $response, 'status' => 200]);
         } else {
           echo json_encode(["message" => "Wrong password", 'status' => 401]);
@@ -115,10 +113,8 @@ class AuthenticationController
       } else {
         echo json_encode(["message" => "User does not exist", 'status' => 401]);
       }
-    }
-    else {
+    } else {
       echo json_encode(['message' => "Missing some fields", 'status' => 400]);
     }
-
   }
 }

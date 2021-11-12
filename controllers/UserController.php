@@ -143,9 +143,9 @@ class UserController
 
           $sql = "select * from user where id = $userId";
           $row = mysqli_query($db, $sql);
-          if($row->num_rows == 0) {
+          if ($row->num_rows == 0) {
             echo json_encode(['message' => "You are not allowed to comment on this blog", 'status' => 405]);
-            return ;
+            return;
           }
 
           $sql = "insert into comment (blogId, userId, description) values('$blogId', '$userId', '$description')";
@@ -180,23 +180,23 @@ class UserController
     }
 
     $user_id = json_decode($user_valid)->id;
-    
+
     $payload = ['blogId'];
     $check = FormMiddleware::checkFullFields($payload);
-    
+
     if ($check) {
 
+      $db = Db::getInstance();
       $sql = "select * from user where id = $user_id";
       $row = mysqli_query($db, $sql);
-      if($row->num_rows == 0) {
+      if ($row->num_rows == 0) {
         echo json_encode(['message' => "You are not allowed to comment on this blog", 'status' => 405]);
-        return ;
+        return;
       }
 
       $blog_id = $_POST['blogId'];
       $comment_id = substr($param, 1, -1);
-      
-      $db = Db::getInstance();
+
       $sql = "SELECT * from comment where id = $comment_id";
       $row = mysqli_query($db, $sql);
 
@@ -225,7 +225,7 @@ class UserController
   }
 
   public function getBlogAll()
-  { 
+  {
     $list = [];
 
     $db = Db::getInstance();
@@ -245,10 +245,10 @@ class UserController
 
   public function getBlogDetail($param)
   {
-    
+
     $id = substr($param, 1, -1);
     $list = [];
-    
+
     $db = Db::getInstance();
     $sql = "SELECT * FROM blog where id = $id";
     $result = mysqli_query($db, $sql);
