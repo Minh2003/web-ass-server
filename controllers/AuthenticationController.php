@@ -12,7 +12,8 @@ class AuthenticationController
   public function register()
   {
     $payload = ['email', 'password', 'username', 'phoneNumber', 'avatar', 'verify_password'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $email = $_POST['email'];
@@ -29,10 +30,10 @@ class AuthenticationController
         return;
       }
 
-      $check = FormMiddleware::lengthValidator(10, 10, $phoneNumber)
-        && FormMiddleware::emailValidator($email)
-        && FormMiddleware::lengthValidator(0, 51, $username);
-      if ($check) {
+      $check = $formValid->lengthValidator(10, 10, $phoneNumber)
+        && $formValid->emailValidator($email)
+        && $formValid->lengthValidator(0, 51, $username);
+      if (!$check) {
         echo json_encode(['message' => "Invalid data", 'status' => 409]);
       } else {
         $db = Db::getInstance();
@@ -78,7 +79,8 @@ class AuthenticationController
   public function login()
   {
     $payload = ['username', 'password'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
     if ($check) {
       $username = $_POST['username'];
       $password = $_POST['password'];

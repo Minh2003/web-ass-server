@@ -32,7 +32,8 @@ class AdminController
     }
 
     $payload = ['name', 'description', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $name = $_POST['name'];
@@ -63,7 +64,8 @@ class AdminController
     }
 
     $payload = ['name', 'description', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $id = substr($param, 1, -1);
@@ -129,7 +131,8 @@ class AdminController
     }
 
     $payload = ['title', 'content', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $title = $_POST['title'];
@@ -193,7 +196,8 @@ class AdminController
     }
 
     $payload = ['title', 'content', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $id = substr($param, 1, -1);

@@ -26,16 +26,17 @@ class UserController
     $id = json_decode($user_valid)->id;
 
     $payload = ['old_password', 'new_password', 'verify_password'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $old_password = $_POST['old_password'];
       $new_password = $_POST['new_password'];
       $verify_password = $_POST['verify_password'];
 
-      $check = FormMiddleware::lengthValidator(6, 100, $new_password)
-        && FormMiddleware::lengthValidator(6, 100, $old_password)
-        && FormMiddleware::lengthValidator(6, 100, $verify_password);
+      $check = $formValid->lengthValidator(6, 100, $new_password)
+        && $formValid->lengthValidator(6, 100, $old_password)
+        && $formValid->lengthValidator(6, 100, $verify_password);
 
       if ($check) {
         $sql = "SELECT password from user where id = $id";
@@ -76,7 +77,8 @@ class UserController
     $manager = json_decode($user_valid)->manager;
 
     $payload = ['username', 'email', 'avatar', 'phoneNumber'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check == TRUE) {
       $username = $_POST['username'];
@@ -84,9 +86,9 @@ class UserController
       $avatar = $_POST['avatar'];
       $phoneNumber = $_POST['phoneNumber'];
 
-      $check = FormMiddleware::emailValidator($email)
-        && FormMiddleware::lengthValidator(10, 10, $phoneNumber)
-        && FormMiddleware::lengthValidator(1, 50, $username);
+      $check = $formValid->emailValidator($email)
+        && $formValid->lengthValidator(10, 10, $phoneNumber)
+        && $formValid->lengthValidator(1, 50, $username);
       if ($check) {
         $user = $authMiddleware->checkUserExists($username);
         if ($user->num_rows > 0) {
@@ -125,7 +127,8 @@ class UserController
 
     $db = Db::getInstance();
     $payload = ['blogId', 'description'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $blogId = $_POST['blogId'];
@@ -136,7 +139,7 @@ class UserController
       $row = mysqli_query($db, $sql);
 
       if ($row->num_rows > 0) {
-        $check = FormMiddleware::lengthValidator(0, 1000, $description);
+        $check = $formValid->lengthValidator(0, 1000, $description);
 
         if ($check) {
           $userId = json_decode($user_valid)->id;
@@ -182,7 +185,8 @@ class UserController
     $user_id = json_decode($user_valid)->id;
 
     $payload = ['blogId'];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
 
@@ -232,12 +236,20 @@ class UserController
     $sql = 'SELECT * FROM blog';
     $result = mysqli_query($db, $sql);
 
-    if ($result->num_rows) {
+    if ($result->num_rows > 0) {
       while ($row = mysqli_fetch_assoc($result)) {
         $list[] = new blog_model($row['id'], $row['title'], $row['content'], $row['image'], $row['date']);
       }
 
-      echo json_encode(['response' => $list, 'status' => 200]);
+      $json = json_encode($list);
+
+      if($json) {
+        echo json_encode(['response' => $list, 'status' => 200]);
+      }
+      else {
+        echo json_encode(json_last_error_msg());
+      }
+
     } else {
       echo json_encode(['message' => "Server or database is error", 'status' => 500]);
     }
@@ -297,7 +309,8 @@ class UserController
     $db = Db::getInstance();
 
     $payload = ['description', "NoP", "name", "email", "phoneNumber", "date", "time"];
-    $check = FormMiddleware::checkFullFields($payload);
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
 
     if ($check) {
       $name = $_POST['name'];
@@ -313,11 +326,11 @@ class UserController
         return;
       }
 
-      $check = FormMiddleware::emailValidator($email)
-        && FormMiddleware::lengthValidator(10, 10, $phoneNumber)
-        && FormMiddleware::lengthValidator(1, 30, $name)
-        && FormMiddleware::dateValidator($date)
-        && FormMiddleware::timeValidator($time);
+      $check = $formValid->emailValidator($email)
+        && $formValid->lengthValidator(10, 10, $phoneNumber)
+        && $formValid->lengthValidator(1, 30, $name)
+        && $formValid->dateValidator($date)
+        && $formValid->timeValidator($time);
       if ($check) {
         $sql = "insert into reservation (name, email, phoneNumber, NoP, date, time, description) values('$name', '$email', '$phoneNumber', $NoP, '$date', '$time', '$description')";
         $result = mysqli_query($db, $sql);
