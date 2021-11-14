@@ -240,15 +240,8 @@ class UserController
       while ($row = mysqli_fetch_assoc($result)) {
         $list[] = new blog_model($row['id'], $row['title'], $row['content'], $row['image'], $row['date']);
       }
-
-      $json = json_encode($list);
-
-      if($json) {
-        echo json_encode(['response' => $list, 'status' => 200]);
-      }
-      else {
-        echo json_encode(json_last_error_msg());
-      }
+      
+      echo json_encode(['response' => $list, 'status' => 200]);
 
     } else {
       echo json_encode(['message' => "Server or database is error", 'status' => 500]);
