@@ -10,6 +10,7 @@ use reservation_model;
 use Db;
 use Middleware\AuthMiddleware as AuthMiddleware;
 use Middleware\FormMiddleware as FormMiddleware;
+use mysqli;
 
 class UserController
 {
@@ -89,24 +90,43 @@ class UserController
       $check = $formValid->emailValidator($email)
         && $formValid->lengthValidator(10, 10, $phoneNumber)
         && $formValid->lengthValidator(1, 50, $username);
+
       if ($check) {
-        $user = $authMiddleware->checkUserExists($username);
-        if ($user->num_rows > 0) {
-          echo json_encode(['message' => "Username is already exists"]);
-          return;
-        }
-
         $db = Db::getInstance();
-        $sql = "update user set username = '$username', email = '$email', avatar = '$avatar', phoneNumber = '$phoneNumber' where id = '$id'";
+        $sql = "select username from user where id = $id";
+        $row = mysqli_query($db, $sql);
 
-        $result = mysqli_query($db, $sql);
+        $old_username = mysqli_fetch_assoc($row)['username'];
+        $user = $authMiddleware->checkUserExists($username);
 
-        if ($result == TRUE) {
-          $new_user = new user_model($id, $email, '', $username, $phoneNumber, $avatar, $manager);
+        if ($old_username == $username) {
+          $sql = "update user set username = '$username', email = '$email', avatar = '$avatar', phoneNumber = '$phoneNumber' where id = '$id'";
 
-          echo json_encode(['response' => $new_user, 'status' => 200]);
+          $result = mysqli_query($db, $sql);
+
+          if ($result == TRUE) {
+            $new_user = new user_model($id, $email, '', $username, $phoneNumber, $avatar, $manager);
+
+            echo json_encode(['response' => $new_user, 'status' => 200]);
+          } else {
+            echo json_encode(['message' => "Server or database is error", 'status' => 500]);
+          }
         } else {
-          echo json_encode(['message' => "Server or database is error", 'status' => 500]);
+          if ($user->num_rows > 0) {
+            echo json_encode(['message' => "Username is already exists"]);
+            return;
+          }
+          $sql = "update user set username = '$username', email = '$email', avatar = '$avatar', phoneNumber = '$phoneNumber' where id = '$id'";
+
+          $result = mysqli_query($db, $sql);
+
+          if ($result == TRUE) {
+            $new_user = new user_model($id, $email, '', $username, $phoneNumber, $avatar, $manager);
+
+            echo json_encode(['response' => $new_user, 'status' => 200]);
+          } else {
+            echo json_encode(['message' => "Server or database is error", 'status' => 500]);
+          }
         }
       } else {
         echo json_encode(['message' => "Invalid some fields", 'status' => 400]);
