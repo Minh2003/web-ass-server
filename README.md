@@ -102,7 +102,7 @@
     + request:
         + method: POST.
         + url: `/comment/delete/{comment_id}`.
-        + body: {}.
+        + body: {blogId}.
         + header: token.
     + response: thông báo xóa thành công.
   + Update profile:
