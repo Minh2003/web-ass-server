@@ -240,9 +240,8 @@ class UserController
       while ($row = mysqli_fetch_assoc($result)) {
         $list[] = new blog_model($row['id'], $row['title'], $row['content'], $row['image'], $row['date']);
       }
-      
-      echo json_encode(['response' => $list, 'status' => 200]);
 
+      echo json_encode(['response' => $list, 'status' => 200]);
     } else {
       echo json_encode(['message' => "Server or database is error", 'status' => 500]);
     }
@@ -264,7 +263,7 @@ class UserController
       $sql = "SELECT * FROM comment where  blogId = $id";
       $result = mysqli_query($db, $sql);
       while ($row = mysqli_fetch_assoc($result)) {
-        $list[] = new comment_model($row['id'], $row['blogId'], $row['userId'], $row['description']);
+        $list[] = new comment_model($row['id'], $row['userId'], $row['blogId'], $row['description']);
       }
 
       $response = [
