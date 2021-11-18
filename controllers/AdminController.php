@@ -30,15 +30,16 @@ class AdminController
       echo json_encode(["message" => "Invalid action. You are not admin", 'status' => 403]);
       return;
     }
-    
+
     $payload = ['name', 'description', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
-    
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
+
     if ($check) {
       $name = $_POST['name'];
       $description = $_POST['description'];
       $image = $_POST['image'];
-      
+
       $db = Db::getInstance();
       $sql = "Insert into dish (name,description,image) Values ('$name','$description','$image')";
       $row = mysqli_query($db, $sql);
@@ -61,13 +62,14 @@ class AdminController
       echo json_encode(["message" => "Invalid action. You are not admin", 'status' => 403]);
       return;
     }
-    
+
     $payload = ['name', 'description', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
-    
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
+
     if ($check) {
       $id = substr($param, 1, -1);
-      
+
       $db = Db::getInstance();
       $sql = "select * from dish where id = $id";
       $row = mysqli_query($db, $sql);
@@ -100,9 +102,9 @@ class AdminController
       echo json_encode(["message" => "Invalid action. You are not admin", 'status' => 403]);
       return;
     }
-    
+
     $id = substr($param, 1, -1);
-    
+
     $db = Db::getInstance();
     $sql = "SELECT * FROM dish WHERE id =$id";
     $row = mysqli_query($db, $sql);
@@ -127,16 +129,17 @@ class AdminController
       echo json_encode(["message" => "Invalid action. You are not admin", 'status' => 403]);
       return;
     }
-    
+
     $payload = ['title', 'content', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
-    
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
+
     if ($check) {
       $title = $_POST['title'];
       $content = $_POST['content'];
       $image = $_POST['image'];
       $date = time();
-      
+
       $db = Db::getInstance();
       $sql = "insert into blog(title, content, image) values ('$title','$content', '$image')";
       $row = mysqli_query($db, $sql);
@@ -160,7 +163,7 @@ class AdminController
     }
 
     $id = substr($param, 1, -1);
-    
+
     $db = Db::getInstance();
     $sql = "SELECT * FROM blog WHERE id =$id";
     $row = mysqli_query($db, $sql);
@@ -191,10 +194,11 @@ class AdminController
       echo json_encode(["message" => "Invalid action. You are not admin", 'status' => 403]);
       return;
     }
-    
+
     $payload = ['title', 'content', 'image'];
-    $check = FormMiddleware::checkFullFields($payload);
-    
+    $formValid = new FormMiddleware();
+    $check = $formValid->checkFullFields($payload);
+
     if ($check) {
       $id = substr($param, 1, -1);
 
@@ -266,12 +270,12 @@ class AdminController
 
     $id = substr($param, 1, -1);
     $admin_id = json_decode($user_valid)->id;
-    
+
     if ($id == $admin_id) {
       echo json_encode(["message" => "You can't delete yourself!", "status" => 403]);
       return;
     }
-    
+
     $db = Db::getInstance();
     $sql = "select * from user where id = $id";
     $row = mysqli_query($db, $sql);
@@ -305,7 +309,7 @@ class AdminController
     }
 
     $comment_id = substr($param, 1, -1);
-    
+
     $db = Db::getInstance();
     $sql = "select * from comment where id = $comment_id";
     $row = mysqli_query($db, $sql);
