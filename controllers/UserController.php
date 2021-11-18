@@ -283,9 +283,14 @@ class UserController
       $sql = "SELECT * FROM comment where  blogId = $id";
       $result = mysqli_query($db, $sql);
       while ($row = mysqli_fetch_assoc($result)) {
-        $list[] = new comment_model($row['id'], $row['userId'], $row['blogId'], $row['description']);
-      }
+        $a_comment = new comment_model($row['id'], $row['userId'], $row['blogId'], $row['description']);
+        $sql_i = "select username, avatar from user where id =" . $row['userId'];
+        $result_i = mysqli_query($db, $sql_i);
+        $user_info = mysqli_fetch_assoc($result_i);
+        $new_element = (object) array_merge((array)$a_comment, (array)$user_info);
 
+        $list[] = $new_element;
+      }
       $response = [
         'blog' => $blog,
         'comments' => $list,
