@@ -302,6 +302,24 @@ class UserController
     }
   }
 
+  public function getDishDetail($param)
+  {
+    $id = substr($param, 1, -1);
+
+    $db = Db::getInstance();
+    $sql = "SELECT * FROM dish where id = $id";
+    $result = mysqli_query($db, $sql);
+
+    if ($result->num_rows) {
+      $row = mysqli_fetch_assoc($result);
+      $dish = new dish_model($row['id'], $row['name'], $row['description'], $row['image']);
+
+      echo json_encode(['response' => $dish, 'status' => 200]);
+    } else {
+      echo json_encode(['message' => "Server or database is error", 'status' => 500]);
+    }
+  }
+
   public function getMenu()
   {
     $list = [];
