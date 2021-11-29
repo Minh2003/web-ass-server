@@ -1,3 +1,5 @@
+drop schema if exists restaurant;
+
 create schema restaurant;
 
 use restaurant;
