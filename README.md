@@ -2,7 +2,7 @@
 
 ## 1. Lưu ý khi chạy:
 
-- Trong file db.php, cần đổi các trường hostname, username, password, database về đúng với máy chủ đang chạy XAMPP
+- Trong file db.php, cần đổi các trường hostname, username, password, database trong câu lệnh mysqli_connect về đúng với máy chủ đang chạy XAMPP
 
 ## 2. Thông tin API:
 
