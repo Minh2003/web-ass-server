@@ -1,6 +1,10 @@
 # Web restaurant server
 
-## 1. Thông tin API:
+## 1. Lưu ý khi chạy:
+
+- Trong file db.php, cần đổi các trường hostname, username, password, database về đúng với máy chủ đang chạy XAMPP
+
+## 2. Thông tin API:
 
 - Thông tin lúc gửi đi:
   - method: **GET** hoặc **POST**.
@@ -26,7 +30,7 @@
   - `404 - Not found`: kiểm tra lại method hoặc đường link truy cập api.
   - `Server or databse is error`: kiểm tra lại server hoặc db có đang được chạy hay không. Hoặc thao tác trên dữ liệu không hợp lệ (dữ liệu đã bị xóa).
 
-## 2. Chi tiết về các API:
+## 3. Chi tiết về các API:
 
 - Phía khách:
   - Lấy thông tin tất cả các blog:
